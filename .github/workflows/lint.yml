@@ -1,0 +1,35 @@
+name: Mobile App Lint
+
+on:
+  pull_request:
+  push:
+    branches:
+      - '**'  
+    paths:
+      - 'mealmeter/**'
+
+jobs:
+  lint:
+    name: Run ESLint
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: mealmeter
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: mealmeter/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
