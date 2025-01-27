@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  mobile:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mealmeter_mobile
+    ports:
+      - "8081:8081"   # Metro bundler port + Web interface port
+      - "19000:19000" # Expo Go main connection port
+      - "19001:19001" # Debugger port
+      - "19002:19002" # Expo old default port // 
+    volumes:
+      - ./mealmeter:/mealmeter_mobile/mealmeter 
+    stdin_open: true
+    tty: true
