@@ -5,11 +5,18 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import { LogBox } from 'react-native';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+// Ignore specific warnings if needed
+LogBox.ignoreLogs([
+  'Bridgeless mode is enabled',
+  'JavaScript logs will be removed from Metro'
+]);
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -23,6 +30,16 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
+  useEffect(() => {
+    if (__DEV__) {
+      const DevSettings = require('react-native').DevSettings;
+      DevSettings.addMenuItem('Show React DevTools', () => {
+        // This will trigger DevTools to open
+        require('react-devtools-core').connect('localhost:8097');
+      });
+    }
+  }, []);
+
   if (!loaded) {
     return null;
   }
@@ -31,7 +48,7 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
+        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
