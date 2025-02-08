@@ -33,10 +33,7 @@ export function DatePicker({ value, onChange, placeholder = 'Select Date' }: Dat
         onPress={showDatepicker}
         style={[
           styles.button,
-          {
-            backgroundColor: Colors[colorScheme ?? 'light'].background,
-            borderColor: Colors[colorScheme ?? 'light'].border,
-          },
+          { borderColor: Colors[colorScheme].tint }
         ]}>
         <ThemedText>
           {value ? new Date(value).toLocaleDateString() : placeholder}

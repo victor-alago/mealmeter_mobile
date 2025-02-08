@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { TextInput } from '@/components/ui/TextInput';
 import { Picker } from '@/components/ui/Picker';
 import { DatePicker } from '@/components/ui/DatePicker';
+import { Colors } from '@/constants/Colors';
 
 export default function SetupScreen() {
   const [step, setStep] = useState(1);
@@ -146,7 +147,7 @@ export default function SetupScreen() {
       case 1:
         return (
           <View style={styles.stepContainer}>
-            <ThemedText type="title" style={styles.stepTitle}>Personalize Your Plan</ThemedText>
+            <ThemedText type="title" style={styles.stepTitle}>Personalize Your Plan By Giving Us Some Information</ThemedText>
             <ThemedText type="subtitle" style={styles.stepSubtitle}>Step 1: Personal Information</ThemedText>
             
             <View style={styles.formGroup}>
@@ -160,6 +161,7 @@ export default function SetupScreen() {
                   { label: 'Female', value: 'female' },
                   { label: 'Other', value: 'other' }
                 ]}
+                style={{ borderColor: 'white' }}
               />
             </View>
 
@@ -186,6 +188,7 @@ export default function SetupScreen() {
                 value={formData.height_cm}
                 onChangeText={(value) => handleChange('height_cm', value)}
                 keyboardType="numeric"
+                style={styles.input}
               />
             </View>
 
@@ -196,6 +199,7 @@ export default function SetupScreen() {
                 value={formData.weight_kg}
                 onChangeText={(value) => handleChange('weight_kg', value)}
                 keyboardType="numeric"
+                style={styles.input}
               />
             </View>
 
@@ -246,6 +250,7 @@ export default function SetupScreen() {
                     value={formData.target_weight}
                     onChangeText={(value) => handleChange('target_weight', value)}
                     keyboardType="numeric"
+                    style={styles.input}
                   />
                 </View>
 
@@ -256,6 +261,7 @@ export default function SetupScreen() {
                     value={formData.weekly_goal_kg}
                     onChangeText={(value) => handleChange('weekly_goal_kg', value)}
                     keyboardType="numeric"
+                    style={styles.input}
                   />
                 </View>
               </>
@@ -291,6 +297,7 @@ export default function SetupScreen() {
                 value={formData.food_preferences.join(', ')}
                 onChangeText={(value) => handleArrayInput('food_preferences', value)}
                 multiline
+                style={styles.input}
               />
             </View>
 
@@ -301,6 +308,7 @@ export default function SetupScreen() {
                 value={formData.allergies.join(', ')}
                 onChangeText={(value) => handleArrayInput('allergies', value)}
                 multiline
+                style={styles.input}
               />
             </View>
 
@@ -311,6 +319,7 @@ export default function SetupScreen() {
                 value={formData.medical_conditions.join(', ')}
                 onChangeText={(value) => handleArrayInput('medical_conditions', value)}
                 multiline
+                style={styles.input}
               />
             </View>
 
@@ -321,6 +330,7 @@ export default function SetupScreen() {
                 value={formData.medications.join(', ')}
                 onChangeText={(value) => handleArrayInput('medications', value)}
                 multiline
+                style={styles.input}
               />
             </View>
           </View>
@@ -362,7 +372,7 @@ export default function SetupScreen() {
           <Button
             onPress={handleNext}
             style={styles.button}
-            variant="primary">
+            variant="secondary">
             <ThemedText>{step === 4 ? 'Submit' : 'Next'}</ThemedText>
           </Button>
         </View>
@@ -384,6 +394,7 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 24,
     marginBottom: 20,
+    textAlign: 'center',
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -394,6 +405,8 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     paddingVertical: 12,
+    borderWidth: 1,
+    backgroundColor: 'transparent',
   },
   formGroup: {
     marginBottom: 20,
@@ -405,5 +418,16 @@ const styles = StyleSheet.create({
   stepSubtitle: {
     fontSize: 18,
     marginBottom: 16,
+  },
+  input: {
+    width: '100%',
+    height: 50,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    borderColor: Colors.light.tint,
+    color: 'white',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
 }); 

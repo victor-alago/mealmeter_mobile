@@ -1,12 +1,12 @@
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
-const LOCAL_IP = '192.168.1.151'; // Your actual local IP address
+const LOCAL_IP = '192.168.1.215'; // Use your local network IP
 
 const ENV = {
     dev: {
         apiUrl: Platform.select({
-            ios: `http://${LOCAL_IP}:8000`,  // Use your local IP for iOS
+            ios: `http://${LOCAL_IP}:8000`,  // Now using 192.168.1.215
             android: 'http://10.0.2.2:8000',   // Android emulator
             default: 'http://localhost:8000',   // Web
         }),

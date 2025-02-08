@@ -21,6 +21,7 @@ export function Picker({ items, selectedValue, onValueChange, placeholder = 'Sel
   const [modalVisible, setModalVisible] = useState(false);
   const colorScheme = useColorScheme();
   const selectedItem = items.find(item => item.value === selectedValue);
+  const borderColor = Colors[colorScheme].tint;
 
   return (
     <View style={styles.container}>
@@ -28,10 +29,7 @@ export function Picker({ items, selectedValue, onValueChange, placeholder = 'Sel
         onPress={() => setModalVisible(true)}
         style={[
           styles.pickerButton,
-          {
-            backgroundColor: Colors[colorScheme ?? 'light'].background,
-            borderColor: Colors[colorScheme ?? 'light'].border,
-          }
+          { borderColor },
         ]}>
         <ThemedText style={styles.pickerText}>
           {selectedItem ? selectedItem.label : placeholder}
@@ -160,6 +158,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 8,
     borderWidth: 1,
+    borderColor: 'white',
   },
   selectedOption: {
     backgroundColor: Colors.light.tint,
