@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { ThemedText } from './ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
@@ -8,14 +8,20 @@ interface TabControlProps {
   tabs: string[];
   activeTab: string;
   onTabChange: (tab: string) => void;
+  style?: ViewStyle;
 }
 
-export const TabControl = ({ tabs, activeTab, onTabChange }: TabControlProps) => {
-  const colorScheme = useColorScheme();
+export const TabControl = ({ 
+  tabs, 
+  activeTab, 
+  onTabChange, 
+  style 
+}: TabControlProps) => {
+  const colorScheme = useColorScheme() ?? 'light';
   const activeColor = Colors[colorScheme].tint;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       {tabs.map((tab) => (
         <TouchableOpacity
           key={tab}
@@ -45,12 +51,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   tabButton: {
-    flex: 1,
     alignItems: 'center',
+    flex: 1,
     paddingVertical: 12,
   },
   tabText: {
     fontSize: 16,
     fontWeight: '500',
   },
-}); 
+});

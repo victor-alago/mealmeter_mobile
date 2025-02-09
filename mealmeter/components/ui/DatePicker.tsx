@@ -55,10 +55,10 @@ export function DatePicker({ value, onChange, placeholder = 'Select Date' }: Dat
 
 const styles = StyleSheet.create({
   button: {
-    height: 50,
-    borderWidth: 1,
     borderRadius: 8,
-    paddingHorizontal: 16,
+    borderWidth: 1,
+    height: 50,
     justifyContent: 'center',
+    paddingHorizontal: 16,
   },
 }); 

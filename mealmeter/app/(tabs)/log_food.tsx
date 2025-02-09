@@ -47,6 +47,11 @@ export default function LogFoodScreen() {
         },
       });
 
+      // Trigger dashboard reload
+      if (global.reloadDashboard) {
+        await global.reloadDashboard();
+      }
+
       Alert.alert('Success', response.data.message);
       clearForm();
     } catch (error) {
@@ -142,37 +147,31 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  scrollContainer: {
-    paddingBottom: 40,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
   formGroup: {
     marginBottom: 15,
   },
-  label: {
-    marginBottom: 8,
-    fontSize: 16,
-  },
   input: {
-    height: 50,
-    borderWidth: 1,
     borderColor: 'white',
     borderRadius: 8,
-    paddingHorizontal: 16,
+    borderWidth: 1,
     fontSize: 16,
+    height: 50,
+    paddingHorizontal: 16,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 8,
+  },
+  scrollContainer: {
+    paddingBottom: 40,
   },
   submitButton: {
-    marginTop: 20,
+    alignItems: 'center',
+    backgroundColor: Colors.light.tint,
     borderRadius: 10,
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 20,
     paddingVertical: 12,
-    backgroundColor: Colors.light.tint,
   },
 });

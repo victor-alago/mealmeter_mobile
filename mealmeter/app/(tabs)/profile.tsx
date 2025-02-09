@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, ScrollView, TouchableOpacity, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { Button } from '@/components/ui/Button';
-import axios from 'axios';
-import { API_URL } from '@/config/api';
-import { getAuthToken } from '@/utils/secureStorage';
 import { Picker } from '@/components/ui/Picker';
 import { TextInput } from '@/components/ui/TextInput';
 import { TabControl } from '@/components/ui/TabControl';
 import { Colors } from '@/constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios';
+import { API_URL } from '@/config/api';
+import { getAuthToken } from '@/utils/secureStorage';
 
 const genderOptions = [
   { label: 'Male', value: 'male' },
@@ -84,8 +84,14 @@ const ProfileScreen = () => {
       setEditField(null);
       fetchProfile();
       setError('');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Update failed');
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || 'Update failed');
+      } else if (err instanceof Error) {
+        setError(err.message || 'An unexpected error occurred');
+      } else {
+        setError('An unknown error occurred');
+      }
     }
   };
 
@@ -127,9 +133,20 @@ const ProfileScreen = () => {
       setTimeout(() => {
         setError('');
       }, 3000);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Password update error:', err);
-      setError(err.response?.data?.detail || 'Failed to update password');
+      
+      // Type-safe error handling
+      if (axios.isAxiosError(err)) {
+        // Axios-specific error handling
+        setError(err.response?.data?.detail || 'Failed to update password');
+      } else if (err instanceof Error) {
+        // Generic Error object handling
+        setError(err.message || 'An unexpected error occurred');
+      } else {
+        // Fallback for other unknown error types
+        setError('An unknown error occurred');
+      }
     }
   };
 
@@ -171,70 +188,51 @@ const ProfileScreen = () => {
           )}
 
           <View style={styles.buttonRow}>
-            <Button
-              title="Save"
+            <TouchableOpacity
               onPress={handleSave}
-              variant="primary"
               style={[styles.actionButton, { backgroundColor: Colors.light.tint }]}
             >
-              <Ionicons name="save-outline" size={24} color="white" />
-            </Button>
-            <Button
-              title="Cancel"
+              <View style={styles.buttonContent}>
+                <Ionicons name="save-outline" size={24} color="white" />
+                <Text style={styles.buttonText}>Save</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => setEditField(null)}
-              variant="secondary"
-              style={[styles.actionButton, { backgroundColor: '#666' }]}
+              style={[styles.actionButton, { backgroundColor: Colors.light.background }]}
             >
-              <Ionicons name="close-circle-outline" size={24} color="white" />
-            </Button>
+              <View style={styles.buttonContent}>
+                <Ionicons name="close-outline" size={24} color={Colors.light.text} />
+                <Text style={[styles.buttonText, { color: Colors.light.text }]}>Cancel</Text>
+              </View>
+            </TouchableOpacity>
           </View>
         </View>
       );
     }
 
-    // Special rendering for email field
-    if (field === 'email') {
-      return (
-        <View style={styles.fieldContainer}>
-          <ThemedText style={styles.label}>Email</ThemedText>
-          <ThemedText style={styles.fieldValue}>
-            {profile[field]?.toString() || 'Not set'}
-          </ThemedText>
-        </View>
-      );
-    }
-
+    // Render non-editable field
     return (
-      <TouchableOpacity 
-        onPress={() => {
-          if (field !== 'email') {
-            setEditField(field);
-            setEditValue(profile[field] || '');
-          }
-        }}
-        style={styles.fieldContainer}
-      >
+      <View style={styles.fieldContainer}>
         <View style={styles.fieldHeader}>
           <ThemedText style={styles.label}>{label}</ThemedText>
-          {field !== 'email' && (
-            <Button
+          {editable && (
+            <TouchableOpacity 
               onPress={() => {
                 setEditField(field);
                 setEditValue(profile[field] || '');
               }}
-              variant="text"
               style={styles.editButton}
             >
               <Ionicons name="create-outline" size={20} color="white" />
-            </Button>
+              <Text style={styles.editButtonText}>Edit</Text>
+            </TouchableOpacity>
           )}
         </View>
         <ThemedText style={styles.fieldValue}>
-          {Array.isArray(profile[field]) 
-            ? profile[field].join(', ') 
-            : profile[field]?.toString() || 'Not set'}
+          {profile?.[field] || 'Not set'}
         </ThemedText>
-      </TouchableOpacity>
+      </View>
     );
   };
 
@@ -273,10 +271,8 @@ const ProfileScreen = () => {
                 placeholder="New Password"
                 secureTextEntry
               />
-              <Button 
+              <TouchableOpacity 
                 onPress={handlePasswordUpdate}
-                title="Update Password"
-                variant="primary"
                 style={{ 
                   marginTop: 10, 
                   backgroundColor: Colors.light.tint,
@@ -287,13 +283,16 @@ const ProfileScreen = () => {
                   justifyContent: 'center',
                 }}
               >
-                <Ionicons 
-                  name="lock-closed-outline" 
-                  size={20} 
-                  color="white" 
-                  style={{ marginRight: 8 }}
-                />
-              </Button>
+                <View style={styles.buttonContent}>
+                  <Ionicons 
+                    name="lock-closed-outline" 
+                    size={20} 
+                    color="white" 
+                    style={{ marginRight: 8 }}
+                  />
+                  <Text style={styles.buttonText}>Update Password</Text>
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
         )}
@@ -330,96 +329,82 @@ const ProfileScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  profileTitle: {
-    fontSize: 24,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  scrollViewContent: {
-    paddingBottom: 40,
-  },
-  sectionContainer: {
-    marginBottom: 25,
-    gap: 15,
-  },
-  fieldContainer: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderWidth: 1,
-    borderColor: Colors.light.border,
-    borderRadius: 10,
-    padding: 16,
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 8,
-    color: 'white',
-    fontWeight: '600',
-  },
-  inputField: {
-    height: 50,
-    borderWidth: 1,
-    borderColor: Colors.light.border,
+  actionButton: {
     borderRadius: 8,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    color: Colors.light.text,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    flex: 1,
+    paddingVertical: 12,
+  },
+  buttonContent: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'center',
   },
   buttonRow: {
     flexDirection: 'row',
     gap: 10,
     marginTop: 15,
   },
-  actionButton: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
   buttonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
   },
+  container: {
+    flex: 1,
+    padding: 16,
+  },
   editButton: {
-    flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Colors.light.tint,
     borderRadius: 8,
-    paddingVertical: 8,
+    flexDirection: 'row',
     paddingHorizontal: 12,
+    paddingVertical: 8,
   },
   editButtonText: {
     color: 'white',
-    marginLeft: 4,
     fontSize: 14,
     fontWeight: '500',
+    marginLeft: 4,
+  },
+  fieldContainer: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderColor: Colors.light.border,
+    borderRadius: 10,
+    borderWidth: 1,
+    padding: 16,
   },
   fieldHeader: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     justifyContent: 'space-between',
   },
   fieldValue: {
     marginTop: 8,
   },
-  errorContainer: {
-    backgroundColor: Colors.light.errorBackground,
-    padding: 12,
+  inputField: {
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderColor: Colors.light.border,
     borderRadius: 8,
-    marginBottom: 16,
+    borderWidth: 1,
+    color: Colors.light.text,
+    fontSize: 16,
+    height: 50,
+    paddingHorizontal: 16,
   },
-  errorText: {
-    color: Colors.light.errorText,
+  label: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  scrollViewContent: {
+    paddingBottom: 40,
+  },
+  sectionContainer: {
+    gap: 15,
+    marginBottom: 25,
   },
   tabContainer: {
     marginBottom: 20,

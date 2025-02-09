@@ -83,6 +83,7 @@ export default function SetupScreen() {
         weight_kg: parseFloat(formData.weight_kg),
         target_weight: formData.goal === 'weight maintenance' ? null : parseFloat(formData.target_weight),
         weekly_goal_kg: formData.goal === 'weight maintenance' ? null : parseFloat(formData.weekly_goal_kg),
+        is_setup: true, // Explicitly set is_setup to true
       };
 
       console.log('Submitting data:', preparedData);
@@ -101,6 +102,7 @@ export default function SetupScreen() {
             timeout: 10000,
           }
         );
+        // Redirect to index after successful setup
         router.replace('/(tabs)');
       } catch (error: any) {
         if (error.response?.data?.detail === "Profile already exists. Use PUT to update.") {
@@ -116,6 +118,7 @@ export default function SetupScreen() {
               timeout: 10000,
             }
           );
+          // Redirect to index after successful update
           router.replace('/(tabs)');
         } else {
           throw error; // Re-throw if it's a different error
@@ -382,52 +385,53 @@ export default function SetupScreen() {
 }
 
 const styles = StyleSheet.create({
+  button: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    flex: 1,
+    paddingVertical: 12,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    justifyContent: 'space-between',
+    marginTop: 30,
+  },
   container: {
     flex: 1,
+  },
+  formGroup: {
+    marginBottom: 20,
+  },
+  input: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: Colors.light.tint,
+    borderRadius: 8,
+    borderWidth: 1,
+    color: 'white',
+    fontSize: 16,
+    height: 50,
+    paddingHorizontal: 16,
+    width: '100%',
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 8,
   },
   scrollContent: {
     padding: 20,
   },
   stepContainer: {
     gap: 16,
-  },
-  stepTitle: {
-    fontSize: 24,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 30,
-    gap: 12,
-  },
-  button: {
-    flex: 1,
-    paddingVertical: 12,
-    borderWidth: 1,
-    backgroundColor: 'transparent',
-  },
-  formGroup: {
-    marginBottom: 20,
-  },
-  label: {
-    marginBottom: 8,
-    fontSize: 16,
+    marginTop: 120,
   },
   stepSubtitle: {
     fontSize: 18,
     marginBottom: 16,
   },
-  input: {
-    width: '100%',
-    height: 50,
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    borderColor: Colors.light.tint,
-    color: 'white',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  stepTitle: {
+    fontSize: 24,
+    marginBottom: 20,
+    textAlign: 'center',
   },
 }); 

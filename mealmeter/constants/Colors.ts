@@ -14,6 +14,9 @@ export const Colors = {
     icon: '#687076',
     tabIconDefault: '#687076',
     tabIconSelected: tintColorLight,
+    border: '#E0E0E0',  // Light gray border color
+    errorBackground: '#FFEBEE',  // Light red background for errors
+    errorText: '#D32F2F',  // Dark red text for errors
   },
   dark: {
     text: '#ECEDEE',
@@ -22,5 +25,8 @@ export const Colors = {
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
+    border: '#444444',  // Dark gray border color
+    errorBackground: '#5D1212',  // Dark red background for errors
+    errorText: '#FF6B6B',  // Light red text for errors
   },
 };

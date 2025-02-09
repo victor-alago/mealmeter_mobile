@@ -33,7 +33,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="food-recognition"
         options={{
-          title: 'Food',
+          title: 'Food Scan',
           tabBarIcon: ({ color }) => <IconSymbol name="camera.fill" color={color} />,
         }}
       />
@@ -53,4 +53,4 @@ export default function TabLayout() {
       />
     </Tabs>
   );
-} 
+}
