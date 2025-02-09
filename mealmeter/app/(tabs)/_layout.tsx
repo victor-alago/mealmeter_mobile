@@ -38,6 +38,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="log_food"
+        options={{
+          title: 'Log Food',
+          tabBarIcon: ({ color }) => <IconSymbol name="plus.circle.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
