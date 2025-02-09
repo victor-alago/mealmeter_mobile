@@ -26,10 +26,10 @@ export function TextInput(props: TextInputProps) {
 
 const styles = StyleSheet.create({
   input: {
-    height: 50,
-    borderWidth: 1,
     borderRadius: 8,
-    paddingHorizontal: 16,
+    borderWidth: 1,
     fontSize: 16,
+    height: 50,
+    paddingHorizontal: 16,
   },
 }); 

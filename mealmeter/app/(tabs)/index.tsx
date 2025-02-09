@@ -1,64 +1,261 @@
-import { Image, StyleSheet } from 'react-native';
+// File: /Users/Tin1/Downloads/Mealmeter/mealmeter_mobile/mealmeter/app/(tabs)/dashboard.tsx
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import axios from 'axios';
+import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
+// Custom Components
 import { ThemedView } from '@/components/ThemedView';
-import { HelloWave } from '@/components/HelloWave';
+import { ThemedText } from '@/components/ThemedText';
+import { Calendar } from '@/components/Calendar';
+import { CalorieProgress } from '@/components/CalorieProgress';
 
-export default function HomeScreen() {
+// Utilities and Configuration
+import { API_URL } from '@/config/api';
+import { getAuthToken } from '@/utils/secureStorage';
+import { Colors } from '@/constants/Colors';
+
+export default function DashboardScreen() {
+  const [profile, setProfile] = useState<any>(null);
+  const [insights, setInsights] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const fetchDashboardData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const token = await getAuthToken();
+      if (!token) {
+        throw new Error('No authentication token');
+      }
+
+      // Fetch user profile to determine if setup is needed
+      const profileResponse = await axios.get(`${API_URL}/users/profile`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const profileData = profileResponse.data.profile_data;
+
+      // If no profile or profile is not set up, redirect to setup
+      if (!profileData || !profileData.is_setup) {
+        router.replace('/setup');
+        return;
+      }
+
+      // If profile exists and is set up, proceed with dashboard data
+      const insightsResponse = await axios.get(`${API_URL}/insights/nutrition`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      setProfile(profileData);
+      setInsights(insightsResponse.data);
+      setError('');
+    } catch (error) {
+      console.error('Dashboard data fetch error:', error);
+      
+      // If there's an error fetching profile, redirect to setup
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        router.replace('/setup');
+      } else {
+        setError('Failed to load dashboard. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
+
+  // Expose reload function globally
+  React.useEffect(() => {
+    global.reloadDashboard = fetchDashboardData;
+  }, [fetchDashboardData]);
+
+  const handleCompleteSetup = () => {
+    router.push('/onboarding/setup');
+  };
+
+  const profileComplete = profile && profile.is_setup;
+
+  if (isLoading) {
+    return (
+      <ThemedView style={styles.loadingContainer}>
+        <ThemedText>Loading dashboard...</ThemedText>
+      </ThemedView>
+    );
+  }
+
+  if (error) {
+    return (
+      <ThemedView style={styles.errorContainer}>
+        <ThemedText style={styles.errorText}>{error}</ThemedText>
+      </ThemedView>
+    );
+  }
+
+  const remainingCalories = insights 
+    ? Math.max(0, (insights.target_calories || 2000) - (insights.total_calories || 0)) 
+    : 0;
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome to MealMeter!</ThemedText>
-        <HelloWave />
-      </ThemedView>
+    <ThemedView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {!profileComplete && (
+          <TouchableOpacity 
+            style={styles.setupPrompt} 
+            onPress={handleCompleteSetup}
+          >
+            <ThemedText style={styles.setupPromptText}>
+              Complete your profile setup
+            </ThemedText>
+            <Ionicons 
+              name="chevron-forward" 
+              size={24} 
+              color={Colors.light.tint} 
+            />
+          </TouchableOpacity>
+        )}
 
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Track Your Meals</ThemedText>
-        <ThemedText>
-          Use our Food Recognition feature to easily log your meals. Just take a photo of your food or select one from your gallery.
-        </ThemedText>
-      </ThemedView>
+        {profileComplete && (
+          <>
+            <CalorieProgress 
+              totalCalories={insights?.total_calories || 0}
+              targetCalories={insights?.target_calories || 2000}
+              remainingCalories={remainingCalories}
+            />
 
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Monitor Calories</ThemedText>
-        <ThemedText>
-          Get instant calorie estimates and nutritional information for your meals. Stay on track with your health goals.
-        </ThemedText>
-      </ThemedView>
-
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Personalized Experience</ThemedText>
-        <ThemedText>
-          Complete your profile setup to receive customized meal recommendations and calorie targets based on your goals.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+            <Calendar profileComplete={profileComplete} />
+            
+            <View style={styles.nutritionSummary}>
+              <ThemedText style={styles.sectionTitle}>Your Daily Nutrition Breakdown</ThemedText>
+              <View style={styles.macroContainer}>
+                <View style={styles.macroItemCard}>
+                  <View style={[styles.macroIconContainer, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
+                    <Ionicons 
+                      name="restaurant" 
+                      size={24} 
+                      color="white" 
+                    />
+                  </View>
+                  <ThemedText style={styles.macroLabel}>Protein</ThemedText>
+                  <ThemedText style={styles.macroValue}>
+                    {insights?.protein_grams || 0}g
+                  </ThemedText>
+                </View>
+                <View style={styles.macroItemCard}>
+                  <View style={[styles.macroIconContainer, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
+                    <Ionicons 
+                      name="pizza" 
+                      size={24} 
+                      color="white" 
+                    />
+                  </View>
+                  <ThemedText style={styles.macroLabel}>Carbs</ThemedText>
+                  <ThemedText style={styles.macroValue}>
+                    {insights?.carbs_grams || 0}g
+                  </ThemedText>
+                </View>
+                <View style={styles.macroItemCard}>
+                  <View style={[styles.macroIconContainer, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
+                    <Ionicons 
+                      name="water" 
+                      size={24} 
+                      color="white" 
+                    />
+                  </View>
+                  <ThemedText style={styles.macroLabel}>Fats</ThemedText>
+                  <ThemedText style={styles.macroValue}>
+                    {insights?.fats_grams || 0}g
+                  </ThemedText>
+                </View>
+              </View>
+            </View>
+          </>
+        )}
+      </ScrollView>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    flex: 1,
+  },
+  errorContainer: {
     alignItems: 'center',
-    gap: 8,
+    flex: 1,
+    justifyContent: 'center',
+    padding: 16,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 16,
+  errorText: {
+    color: Colors.light.error,
+    textAlign: 'center',
   },
-  headerImage: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  loadingContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  macroContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  macroIconContainer: {
+    alignItems: 'center',
+    borderRadius: 20,
+    height: 40,
+    justifyContent: 'center',
+    marginBottom: 10,
+    width: 40,
+  },
+  macroItemCard: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 10,
+    padding: 15,
+    width: '30%',
+  },
+  macroLabel: {
+    color: 'white',
+    fontSize: 14,
+  },
+  macroValue: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  nutritionSummary: {
+    alignSelf: 'center',
+    backgroundColor: Colors.light.tint,
+    borderRadius: 10,
+    marginBottom: 20,
+    marginTop: 20,
+    padding: 15,
+    width: '92%',
+  },
+  scrollContainer: {
+    flexGrow: 1,  
+    padding: 16,
+  },
+  sectionTitle: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  setupPrompt: {
+    alignItems: 'center',
+    backgroundColor: Colors.light.background,
+    borderRadius: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+    padding: 15,
+  },
+  setupPromptText: {
+    fontSize: 16,
   },
 });

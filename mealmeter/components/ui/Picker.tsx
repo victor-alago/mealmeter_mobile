@@ -106,28 +106,11 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
   },
-  pickerButton: {
-    height: 50,
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  pickerText: {
-    fontSize: 16,
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
   modalContent: {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 20,
     maxHeight: '80%',
+    padding: 20,
     ...Platform.select({
       ios: {
         shadowColor: '#000',
@@ -141,31 +124,48 @@ const styles = StyleSheet.create({
     }),
   },
   modalHeader: {
+    alignItems: 'center',
+    borderBottomColor: '#ccc',
+    borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: 20,
     paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+  },
+  modalOverlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    flex: 1,
+    justifyContent: 'flex-end',
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
   },
   optionButton: {
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 8,
-    borderWidth: 1,
     borderColor: 'white',
-  },
-  selectedOption: {
-    backgroundColor: Colors.light.tint,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginBottom: 8,
+    padding: 15,
   },
   optionText: {
     fontSize: 16,
     textAlign: 'center',
+  },
+  pickerButton: {
+    alignItems: 'center',
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: 'row',
+    height: 50,
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+  },
+  pickerText: {
+    fontSize: 16,
+  },
+  selectedOption: {
+    backgroundColor: Colors.light.tint,
   },
   selectedOptionText: {
     color: '#fff',

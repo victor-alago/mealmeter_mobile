@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { StyleSheet, Image, View, Platform, ActionSheetIOS, useColorScheme, ScrollView } from 'react-native';
+import { 
+  StyleSheet, 
+  Image, 
+  View, 
+  Platform, 
+  ScrollView, 
+  useColorScheme,
+  Alert 
+} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { uploadImage } from '@/services/api';
 import { Ionicons } from '@expo/vector-icons';
@@ -110,24 +118,24 @@ export default function FoodRecognitionScreen() {
   };
 
   const showImageOptions = () => {
-    if (Platform.OS === 'ios') {
-      ActionSheetIOS.showActionSheetWithOptions(
+    Alert.alert(
+      'Select an option',
+      '',
+      [
         {
-          options: ['Cancel', 'Take Photo', 'Choose from Library'],
-          cancelButtonIndex: 0,
+          text: 'Cancel',
+          style: 'cancel',
         },
-        (buttonIndex) => {
-          if (buttonIndex === 1) {
-            takePhoto();
-          } else if (buttonIndex === 2) {
-            pickImage();
-          }
-        }
-      );
-    } else {
-      // For Android, show camera by default
-      takePhoto();
-    }
+        {
+          text: 'Take Photo',
+          onPress: takePhoto,
+        },
+        {
+          text: 'Choose from Library',
+          onPress: pickImage,
+        },
+      ],
+    );
   };
 
   return (
@@ -216,48 +224,15 @@ export default function FoodRecognitionScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'black',  
-  },
-  content: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 20,
-    paddingBottom: 100, 
-  },
-  instructions: {
-    textAlign: 'center',
-    paddingHorizontal: 20,
-  },
-  image: {
-    width: 340,
-    height: 340,
-    resizeMode: 'contain',
-    borderRadius: 35,
-    marginTop: 50,
-    alignSelf: 'center',
-  },
   analyzeButton: {
-    width: '98%',
-    paddingVertical: 14,
-    borderRadius: 16,
+    alignSelf: 'center',
     backgroundColor: 'black', 
-    marginTop: 40,
-    borderWidth: 2,
-    borderColor: 'white',  
-    alignSelf: 'center',
-  },
-  doneButton: {
-    width: '103%',
-    alignSelf: 'center',
-    paddingVertical: 14,
+    borderColor: 'white',
     borderRadius: 16,
-    backgroundColor: 'white',  
-    marginTop: 24,
     borderWidth: 2,
-    borderColor: 'black',  
+    marginTop: 40,
+    paddingVertical: 14,
+    width: '98%',
   },
   buttonTextAnalyze: {
     color: 'white',  
@@ -269,18 +244,114 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+  calories: {
+    color: '#000000',  
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  cameraButton: {
+    alignItems: 'center',
+    backgroundColor: 'black',
+    borderColor: 'white',
+    borderRadius: 40,
+    borderWidth: 3,
+    height: 80,
+    justifyContent: 'center',
+    width: 80,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 6,
+      },
+    }),
+  },
+  cameraButtonContainer: {
+    alignItems: 'center',
+    bottom: 55,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    zIndex: 10,
+  },
+  centerContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  container: {
+    backgroundColor: 'black',  
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+  },
+  contentContainer: {
+    padding: 20,
+    paddingBottom: 100, 
+  },
+  doneButton: {
+    alignSelf: 'center',
+    backgroundColor: 'white',  
+    borderColor: 'black',
+    borderRadius: 16,
+    borderWidth: 2,
+    marginTop: 24,
+    paddingVertical: 14,
+    width: '103%',
+  },
   error: {
     color: '#FF6B6B', 
-    textAlign: 'center',
     marginVertical: 10,
+    textAlign: 'center',
+  },
+  foodDetails: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    opacity: 0.8,
+  },
+  foodItem: {
+    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+    borderBottomWidth: 1,
+    paddingBottom: 16,
+  },
+  foodItemsContainer: {
+    gap: 16,
+  },
+  foodName: {
+    color: '#000000',  
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  fullScreenImage: {
+    alignSelf: 'center',
+    borderRadius: 40,
+    height: '84%',
+    position: 'absolute',
+    resizeMode: 'cover',
+    top: 230,
+    width: '84%',
+  },
+  image: {
+    alignSelf: 'center',
+    borderRadius: 35,
+    height: 340,
+    marginTop: 50,
+    resizeMode: 'contain',
+    width: 340,
   },
   resultsContainer: {
+    alignSelf: 'center',
     backgroundColor: '#FFFFFF', 
     borderRadius: 20,
-    padding: 24,
     marginTop: 50,
+    padding: 24,
     width: '98%',
-    alignSelf: 'center',
     ...Platform.select({
       ios: {
         shadowColor: '#000',
@@ -296,105 +367,25 @@ const styles = StyleSheet.create({
   resultsContainerDark: {
     backgroundColor: '#FFFFFF',  
   },
-  totalCalories: {
-    fontSize: 30,
-    fontWeight: '700',
-    textAlign: 'center',
-    marginBottom: 24,
-    marginTop: 10,
-    color: '#000000',  
-  },
-  foodItemsContainer: {
-    gap: 16,
-  },
-  foodItem: {
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
-    paddingBottom: 16,
-  },
-  foodName: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: '#000000',  
-  },
-  foodDetails: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    opacity: 0.8,
-  },
-  calories: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#000000',  
-  },
   serving: {
-    fontSize: 16,
     color: '#000000',  
-  },
-  cameraButtonContainer: {
-    position: 'absolute',
-    bottom: 65,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-  },
-  cameraButton: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: 'black', 
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 3, 
-    borderColor: 'white',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 6,
-      },
-    }),
-  },
-  centerContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  fullScreenImage: {
-    width: '84%',
-    height: '84%',
-    position: 'absolute',
-    top: 230,
-    alignSelf: 'center',
-    borderRadius: 40,
-    resizeMode: 'cover',
+    fontSize: 16,
   },
   titleText: {
-    fontSize: 22,
     fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',  
+    fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 20,
     position: 'absolute',
     top: 116,
     zIndex: 1,
   },
-  titleContainer: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  leftAlign: {
-    textAlign: 'left',
-  },
-  centerAlign: {
+  totalCalories: {
+    color: '#000000',  
+    fontSize: 30,
+    fontWeight: '700',
+    marginBottom: 24,
+    marginTop: 10,
     textAlign: 'center',
   },
-  rightAlign: {
-    textAlign: 'right',
-  },
-}); 
+});
