@@ -291,7 +291,7 @@ export default function SetupScreen() {
             <ThemedText type="title" style={styles.stepTitle}>Health and Lifestyle</ThemedText>
             
             <View style={styles.formGroup}>
-              <ThemedText style={styles.label}>Food Preferences (comma-separated):</ThemedText>
+              <ThemedText style={styles.label}>Food Preferences (optional):</ThemedText>
               <TextInput
                 placeholder="Enter food preferences"
                 value={formData.food_preferences.join(', ')}
@@ -302,7 +302,7 @@ export default function SetupScreen() {
             </View>
 
             <View style={styles.formGroup}>
-              <ThemedText style={styles.label}>Allergies (comma-separated):</ThemedText>
+              <ThemedText style={styles.label}>Allergies (optional):</ThemedText>
               <TextInput
                 placeholder="Enter allergies"
                 value={formData.allergies.join(', ')}
@@ -313,7 +313,7 @@ export default function SetupScreen() {
             </View>
 
             <View style={styles.formGroup}>
-              <ThemedText style={styles.label}>Medical Conditions (comma-separated):</ThemedText>
+              <ThemedText style={styles.label}>Medical Conditions (optional):</ThemedText>
               <TextInput
                 placeholder="Enter medical conditions"
                 value={formData.medical_conditions.join(', ')}
@@ -324,7 +324,7 @@ export default function SetupScreen() {
             </View>
 
             <View style={styles.formGroup}>
-              <ThemedText style={styles.label}>Medications (comma-separated):</ThemedText>
+              <ThemedText style={styles.label}>Medications (optional):</ThemedText>
               <TextInput
                 placeholder="Enter medications"
                 value={formData.medications.join(', ')}

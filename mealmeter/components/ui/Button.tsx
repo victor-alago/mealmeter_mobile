@@ -4,19 +4,25 @@ import {
   TouchableOpacityProps,
   StyleSheet,
   ViewStyle,
+  Text,
+  TextStyle,
 } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 
 interface ButtonProps extends TouchableOpacityProps {
   variant?: 'primary' | 'secondary';
-  style?: ViewStyle;
+  children?: React.ReactNode;
+  title?: string;
+  titleStyle?: TextStyle;
 }
 
 export function Button({ 
   children, 
+  title, 
   variant = 'primary', 
   style,
+  titleStyle,
   disabled,
   ...props 
 }: ButtonProps) {
@@ -38,6 +44,11 @@ export function Button({
       disabled={disabled}
       {...props}
     >
+      {title && (
+        <Text style={[styles.buttonText, titleStyle]}>
+          {title}
+        </Text>
+      )}
       {children}
     </TouchableOpacity>
   );
@@ -45,9 +56,16 @@ export function Button({
 
 const styles = StyleSheet.create({
   button: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
     borderRadius: 8,
-    padding: 10,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
-}); 
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+});

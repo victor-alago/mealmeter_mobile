@@ -8,6 +8,8 @@ import { getAuthToken } from '@/utils/secureStorage';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { LogBox } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import ProfileScreen from './(tabs)/profile';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
